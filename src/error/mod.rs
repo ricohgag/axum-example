@@ -36,6 +36,7 @@ impl IntoResponse for AppError {
         let body = Json(json!({
             "error": err_msg,
         }));
+        println!("{}", body.to_string());
         (status, body).into_response()
     }
 }
