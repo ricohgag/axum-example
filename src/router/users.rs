@@ -10,7 +10,7 @@ pub async fn index(Query(param): Query<UserParam>) -> Result<Json<User>> {
     println!("{:?}", param);
     let user = User{
         id: 1,
-        name: param.name,
+        username: param.name,
         age: param.age,
         msg: None,
     };
