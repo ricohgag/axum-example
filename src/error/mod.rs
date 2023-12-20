@@ -31,7 +31,10 @@ impl IntoResponse for AppError {
             AppError::InvalidParams(_) => (StatusCode::UNPROCESSABLE_ENTITY, self.to_string()),
             AppError::MultipartError(_) => (StatusCode::UNPROCESSABLE_ENTITY, self.to_string()),
             AppError::InvalidFileFormat => (StatusCode::UNPROCESSABLE_ENTITY, self.to_string()),
-            AppError::Other(_) => (StatusCode::INTERNAL_SERVER_ERROR, self.to_string()),
+            AppError::Other(_) => {
+                println!("{:?}", self);
+                (StatusCode::INTERNAL_SERVER_ERROR, self.to_string())
+            },
         };
         let body = Json(json!({
             "error": err_msg,

@@ -5,17 +5,10 @@ use crate::error::Result;
 use crate::repositories::RepoExt;
 use crate::service;
 
-pub async fn index(Query(param): Query<UserParam>) -> Result<Json<User>> {
+pub async fn index(Query(param): Query<UserParam>) -> Result<Json<UserParam>> {
     // let users = usecases::users::search(repo.clone(), &conditions).await?;
     println!("{:?}", param);
-    let user = User{
-        id: 1,
-        name: param.name,
-        age: param.age,
-        msg: None,
-    };
-    
-    Ok(Json(user))
+    Ok(Json(param))
 }
 
 pub async fn list(Query(user_param): Query<UserParam>, Extension(repo): RepoExt) -> Result<Json<Vec<User>>> {
