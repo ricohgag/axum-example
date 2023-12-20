@@ -1,7 +1,7 @@
-use anyhow::Context;
 use crate::db::mysql::Db;
 use crate::error::Result;
 use crate::models::user::{ User, UserParam};
+use anyhow::Context;
 use axum::async_trait;
 
 pub struct UserRepoImpl {
@@ -24,14 +24,15 @@ pub trait UserRepo {
 #[async_trait]
 impl UserRepo for UserRepoImpl {
     async fn find_all(&self, user_param: &UserParam) -> Result<Vec<User>> {
-        let mut query = sqlx::query_as::<_, User>("select id, username, email as msg, status as age from user");
+        let mut query = sqlx::query_as::<_, User>("select * from user");
         if let Some(name) = &user_param.name {
-            query = sqlx::query_as::<_, User>("select id, username, email as msg, status as age from user where username LIKE ?")
-                .bind(format!("%{}%", name));
+            query = sqlx::query_as::<_, User>("select * from user where name LIKE $1")
+                .bind(format!("%{}%", name))
         }
         let result = query
             .fetch_all(&*self.pool)
-            .await.with_context(||"查询错误")?;
+            .await
+            .context("DB ERROR (find all users)")?;
         Ok(result)
     }
 
@@ -53,11 +54,11 @@ impl UserRepo for UserRepoImpl {
     // }
 
     async fn find_by_id(&self, user_id: i32) -> Result<User> {
-        let row = sqlx::query_as::<_, User>("select ida, username, email as msg, status as age from user where id = ?")
+        let row = sqlx::query_as::<_, User>("select * from users where id = $1")
             .bind(user_id)
             .fetch_one(&*self.pool)
             .await
-            .with_context(|| "DB find_by_id ERROR ()")?;
+            .context("DB ERROR (find user by id)")?;
         Ok(row)
     }
 }

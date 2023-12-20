@@ -1,8 +1,4 @@
-use axum::{
-    http::StatusCode,
-    response::{IntoResponse, Response},
-    Json,
-};
+use axum::{http::StatusCode, Json, response::{IntoResponse, Response}};
 use serde_json::json;
 use thiserror::Error;
 use tokio::io::AsyncReadExt;
@@ -37,6 +33,7 @@ impl IntoResponse for AppError {
                 (StatusCode::INTERNAL_SERVER_ERROR, self.to_string())
             },
         };
+
         let body = Json(json!({
             "error": err_msg,
         }));

@@ -1,0 +1,47 @@
+$!{init.vm}
+
+##定义初始变量
+#set($tableName = $tool.append($tableInfo.name, ""))
+#set($tableObjName = $tableInfo.obj.name.replaceFirst("sys_",""))
+#set($tableObjParamName = $tool.append($tableObjName, "_param"))
+
+##设置回调
+$!callback.setFileName($tool.append($tableName, ".rs"))
+$!callback.setSavePath($tool.append($tableInfo.savePath, "/router"))
+##拿到主键
+#if(!$tableInfo.pkColumn.isEmpty())
+    #set($pk = $tableInfo.pkColumn.get(0))
+#end
+
+use axum::extract::{Path, Query};
+use axum::{Extension, Json};
+use crate::models::${tableObjName}::{$!{tableInfo.name}, $!{tableInfo.name}Param};
+use crate::error::Result;
+use crate::repositories::RepoExt;
+use crate::service;
+
+
+pub async fn page(Query(${tableObjName}_query_param): Query<$!{tableInfo.name}QueryParam>, Extension(repo): RepoExt) -> Result<Json<Vec<$!{tableInfo.name}>>> {
+    let user = service::users::search(repo.clone(), &${tableObjName}_query_param).await?;
+    Ok(Json(user))
+}
+
+pub async fn select_one(Path(id): Path<i32>, Extension(repo): RepoExt) -> Result<Json<$!{tableInfo.name}>> {
+    let user = service::${tableObjName}::view(repo.clone(), id).await?;
+    Ok(Json(user))
+}
+
+pub async fn insert(Json(${tableObjParamName}): Json($!{tableInfo.name}Param), Extension(repo): RepoExt) -> Result<Json<$!{tableInfo.name}>> {
+    let user = service::${tableObjName}::insert(repo.clone(), ${tableObjParamName}).await?;
+    Ok(Json(user))
+}
+
+pub async fn update(Json(${tableObjParamName}): Json($!{tableInfo.name}Param), Extension(repo): RepoExt) -> Result<Json<$!{tableInfo.name}>> {
+    let user = service::${tableObjName}::update(repo.clone(), ${tableObjParamName}).await?;
+    Ok(Json(user))
+}
+
+pub async fn delete(Path(id): Path<i32>, Extension(repo): RepoExt) -> Result<Json<$!{tableInfo.name}>> {
+    let user = service::${tableObjName}::delete(repo.clone(), id).await?;
+    Ok()
+}
