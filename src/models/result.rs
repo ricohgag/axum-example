@@ -1,7 +1,7 @@
 use axum::Json;
 use axum::response::{IntoResponse, Response};
 use serde::Serialize;
-use sqlx::Error;
+use tracing::error;
 use crate::error::AppError;
 
 #[derive(Serialize)]
@@ -40,7 +40,7 @@ impl<T: Serialize> ToResult<T> for Result<T, AppError> {
         match self {
             Ok(v) => R::ok(v),
             Err(e) => {
-                println!("{:?}", e);
+                error!("{:#?}", e);
                 R::error(e.to_string())
             }
         }

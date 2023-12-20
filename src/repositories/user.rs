@@ -26,7 +26,7 @@ impl UserRepo for UserRepoImpl {
     async fn find_all(&self, user_param: &UserParam) -> Result<Vec<User>> {
         let mut query = sqlx::query_as::<_, User>("select * from user");
         if let Some(name) = &user_param.name {
-            query = sqlx::query_as::<_, User>("select * afrom users where name LIKE $1")
+            query = sqlx::query_as::<_, User>("select * from user where name LIKE $1")
                 .bind(format!("%{}%", name))
         }
         let result = query
