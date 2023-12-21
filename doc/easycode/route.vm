@@ -6,7 +6,7 @@ $!{init.vm}
 #set($tableObjParamName = $tool.append($tableObjName, "_param"))
 
 ##设置回调
-$!callback.setFileName($tool.append($tableName, ".rs"))
+$!callback.setFileName($tool.append($tableObjName, ".rs"))
 $!callback.setSavePath($tool.append($tableInfo.savePath, "/router"))
 ##拿到主键
 #if(!$tableInfo.pkColumn.isEmpty())
@@ -19,29 +19,32 @@ use crate::models::${tableObjName}::{$!{tableInfo.name}, $!{tableInfo.name}Param
 use crate::error::Result;
 use crate::repositories::RepoExt;
 use crate::service;
+use crate::models::result::{R, ToResult};
 
 
-pub async fn page(Query(${tableObjName}_query_param): Query<$!{tableInfo.name}QueryParam>, Extension(repo): RepoExt) -> Result<Json<Vec<$!{tableInfo.name}>>> {
-    let user = service::users::search(repo.clone(), &${tableObjName}_query_param).await?;
-    Ok(Json(user))
+pub async fn select_pages(Extension(repo): RepoExt, 
+    Query(${tableObjName}_query_param): Query<$!{tableInfo.name}QueryParam>
+) -> R<Vec<$!{tableInfo.name}>> {
+    let users_res = service::${tableObjName}::select_pages(repo.clone(), &${tableObjName}_query_param).await;
+    users_res.to_result()
 }
 
-pub async fn select_one(Path(id): Path<i32>, Extension(repo): RepoExt) -> Result<Json<$!{tableInfo.name}>> {
-    let user = service::${tableObjName}::view(repo.clone(), id).await?;
-    Ok(Json(user))
+pub async fn select_one(Extension(repo): RepoExt, Path(id): Path<i32>) -> R<$!{tableInfo.name}> {
+    let user_res = service::${tableObjName}::select_one(repo.clone(), id).await;
+    user_res.to_result()
 }
 
-pub async fn insert(Json(${tableObjParamName}): Json($!{tableInfo.name}Param), Extension(repo): RepoExt) -> Result<Json<$!{tableInfo.name}>> {
-    let user = service::${tableObjName}::insert(repo.clone(), ${tableObjParamName}).await?;
-    Ok(Json(user))
+pub async fn insert(Extension(repo): RepoExt, Json(${tableObjName}): Json($!{tableInfo.name})) -> R<()> {
+    let res = service::${tableObjName}::insert(repo.clone(), ${tableObjName}).await;
+    res.to_result()
 }
 
-pub async fn update(Json(${tableObjParamName}): Json($!{tableInfo.name}Param), Extension(repo): RepoExt) -> Result<Json<$!{tableInfo.name}>> {
-    let user = service::${tableObjName}::update(repo.clone(), ${tableObjParamName}).await?;
-    Ok(Json(user))
+pub async fn update(Extension(repo): RepoExt, Json(${tableObjName}): Json($!{tableInfo.name})) -> R<()> {
+    let res = service::${tableObjName}::update(repo.clone(), ${tableObjName}).await;
+    res.to_result()
 }
 
-pub async fn delete(Path(id): Path<i32>, Extension(repo): RepoExt) -> Result<Json<$!{tableInfo.name}>> {
-    let user = service::${tableObjName}::delete(repo.clone(), id).await?;
-    Ok()
+pub async fn delete(Extension(repo): RepoExt, Path(id): Path<i32>) -> R<()> {
+    let res = service::${tableObjName}::delete(repo.clone(), id).await;
+    res.to_result()
 }

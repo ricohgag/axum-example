@@ -19,6 +19,13 @@ pub trait UserRepo {
     async fn find_all(&self, user_param: &UserParam) -> Result<Vec<User>>;
     // async fn add(&self, user_data: &NewUser) -> Result<UserId>;
     async fn find_by_id(&self, user_id: i32) -> Result<User>;
+
+    async fn insert(&self, user: User) -> Result<()>;
+
+    async fn update_by_id(&self, user: User) -> Result<()>;
+
+    async fn delete_by_id(&self, id: i32) -> Result<()>;
+
 }
 
 #[async_trait]
@@ -60,5 +67,17 @@ impl UserRepo for UserRepoImpl {
             .await
             .context("DB ERROR (find user by id)")?;
         Ok(row)
+    }
+
+    async fn insert(&self, user: User) -> Result<()> {
+        todo!()
+    }
+
+    async fn update_by_id(&self, user: User) -> Result<()> {
+        todo!()
+    }
+
+    async fn delete_by_id(&self, id: i32) -> Result<()> {
+        todo!()
     }
 }

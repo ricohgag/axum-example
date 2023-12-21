@@ -40,7 +40,7 @@ impl<T: Serialize> ToResult<T> for Result<T, AppError> {
         match self {
             Ok(v) => R::ok(v),
             Err(e) => {
-                error!("{:#?}", e);
+                error!("{:?}", e);
                 R::error(e.to_string())
             }
         }
