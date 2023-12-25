@@ -1,0 +1,47 @@
+$!{init.vm}
+
+##定义初始变量
+#set($tableName = $tool.append($tableInfo.name, ""))
+#set($tableObjName = $tableInfo.obj.name.replaceFirst("sys_",""))
+#set($tableObjParamName = $tool.append($tableObjName, "_param"))
+
+##设置回调
+$!callback.setFileName($tool.append($tableObjName, ".rs"))
+$!callback.setSavePath($tool.append($tableInfo.savePath, "/service"))
+##拿到主键
+#if(!$tableInfo.pkColumn.isEmpty())
+    #set($pk = $tableInfo.pkColumn.get(0))
+#end
+
+use crate::error::Result;
+use crate::models::${tableObjName}::{ $!{tableInfo.name}, $!{tableInfo.name}Param};
+use crate::repositories::{${tableObjName}::UserRepo, Repositories};
+use std::sync::Arc;
+
+
+pub async fn select_pages<R: Repositories>(repo: Arc<R>,
+    ${tableObjName}_param: &$!{tableInfo.name}Param,
+) -> Result<Vec<User>> {
+    let users = repo.${tableObjName}().find_all(user_param).await?;
+    Ok(users)
+}
+
+pub async fn select_one<R: Repositories>(repo: Arc<R>, ${tableObjName}_id: i32) -> Result<$!{tableInfo.name}> {
+    let ${tableObjName} = repo.${tableObjName}().find_by_id(${tableObjName}_id).await?;
+    Ok(${tableObjName})
+}
+
+pub async fn insert<R: Repositories>(repo: Arc<R>, ${tableObjName}: $!{tableInfo.name}) -> Result<()> {
+    repo.${tableObjName}().insert(${tableObjName}).await?;
+    Ok(())
+}
+
+pub async fn update<R: Repositories>(repo: Arc<R>, ${tableObjName}: $!{tableInfo.name}) -> Result<()> {
+    repo.${tableObjName}().update(${tableObjName}).await?;
+    Ok(())
+}
+
+pub async fn delete<R: Repositories>(repo: Arc<R>, ${tableObjName}_id: i32) -> Result<()> {
+    repo.${tableObjName}().delete(${tableObjName}_id).await?;
+    Ok(())
+}
