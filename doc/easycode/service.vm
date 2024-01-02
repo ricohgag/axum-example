@@ -14,15 +14,15 @@ $!callback.setSavePath($tool.append($tableInfo.savePath, "/service"))
 #end
 
 use crate::error::Result;
-use crate::models::${tableObjName}::{ $!{tableInfo.name}, $!{tableInfo.name}Param};
+use crate::models::${tableObjName}::{$!{tableInfo.name}, $!{tableInfo.name}Param, $!{tableInfo.name}QueryParam};
 use crate::repositories::{${tableObjName}::UserRepo, Repositories};
 use std::sync::Arc;
 
 
 pub async fn select_pages<R: Repositories>(repo: Arc<R>,
-    ${tableObjName}_param: &$!{tableInfo.name}Param,
+    ${tableObjName}_query_param: &$!{tableInfo.name}QueryParam,
 ) -> Result<Vec<User>> {
-    let users = repo.${tableObjName}().find_all(user_param).await?;
+    let users = repo.${tableObjName}().find_all(${tableObjName}_query_param).await?;
     Ok(users)
 }
 
@@ -31,13 +31,13 @@ pub async fn select_one<R: Repositories>(repo: Arc<R>, ${tableObjName}_id: i32) 
     Ok(${tableObjName})
 }
 
-pub async fn insert<R: Repositories>(repo: Arc<R>, ${tableObjName}: $!{tableInfo.name}) -> Result<()> {
-    repo.${tableObjName}().insert(${tableObjName}).await?;
+pub async fn insert<R: Repositories>(repo: Arc<R>, ${tableObjParamName}: $!{tableInfo.name}Param) -> Result<()> {
+    repo.${tableObjName}().insert(${tableObjParamName}).await?;
     Ok(())
 }
 
-pub async fn update<R: Repositories>(repo: Arc<R>, ${tableObjName}: $!{tableInfo.name}) -> Result<()> {
-    repo.${tableObjName}().update(${tableObjName}).await?;
+pub async fn update<R: Repositories>(repo: Arc<R>, ${tableObjParamName}: $!{tableInfo.name}Param) -> Result<()> {
+    repo.${tableObjName}().update(${tableObjParamName}).await?;
     Ok(())
 }
 

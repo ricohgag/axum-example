@@ -15,7 +15,7 @@ $!callback.setSavePath($tool.append($tableInfo.savePath, "/router"))
 
 use axum::extract::{Path, Query};
 use axum::{Extension, Json};
-use crate::models::${tableObjName}::{$!{tableInfo.name}, $!{tableInfo.name}Param};
+use crate::models::${tableObjName}::{$!{tableInfo.name}, $!{tableInfo.name}Param, $!{tableInfo.name}QueryParam};
 use crate::error::Result;
 use crate::repositories::RepoExt;
 use crate::service;
@@ -34,13 +34,13 @@ pub async fn select_one(Extension(repo): RepoExt, Path(id): Path<i32>) -> R<$!{t
     user_res.to_result()
 }
 
-pub async fn insert(Extension(repo): RepoExt, Json(${tableObjName}): Json($!{tableInfo.name})) -> R<()> {
-    let res = service::${tableObjName}::insert(repo.clone(), ${tableObjName}).await;
+pub async fn insert(Extension(repo): RepoExt, Json(${tableObjParamName}): Json($!{tableInfo.name}Param)) -> R<()> {
+    let res = service::${tableObjName}::insert(repo.clone(), ${tableObjParamName}).await;
     res.to_result()
 }
 
-pub async fn update(Extension(repo): RepoExt, Json(${tableObjName}): Json($!{tableInfo.name})) -> R<()> {
-    let res = service::${tableObjName}::update(repo.clone(), ${tableObjName}).await;
+pub async fn update(Extension(repo): RepoExt, Json(${tableObjParamName}): Json($!{tableInfo.name}Param)) -> R<()> {
+    let res = service::${tableObjName}::update(repo.clone(), ${tableObjParamName}).await;
     res.to_result()
 }
 

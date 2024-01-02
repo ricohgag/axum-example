@@ -1,12 +1,15 @@
-use crate::db::mysql::Db;
 use crate::error::Result;
-use crate::models::user::{ User, UserParam};
-use anyhow::Context;
+use crate::models::user::{User, UserParam, UserQueryParam};
+use crate::repositories::Repositories;
+use crate::db::mysql::Db;
 use axum::async_trait;
+use anyhow::Context;
+
 
 pub struct UserRepoImpl {
     pool: Db,
 }
+
 impl UserRepoImpl {
     pub fn new(pool: Db) -> Self {
         Self { pool: pool }
@@ -16,26 +19,23 @@ impl UserRepoImpl {
 // #[automock]
 #[async_trait]
 pub trait UserRepo {
-    async fn find_all(&self, user_param: &UserParam) -> Result<Vec<User>>;
-    // async fn add(&self, user_data: &NewUser) -> Result<UserId>;
+    async fn find_all(&self, user_query_param: &UserQueryParam) -> Result<Vec<User>>;
+
     async fn find_by_id(&self, user_id: i32) -> Result<User>;
 
-    async fn insert(&self, user: User) -> Result<()>;
+    async fn insert(&self, user_param: &UserParam) -> Result<()>;
 
-    async fn update_by_id(&self, user: User) -> Result<()>;
+    async fn update_by_id(&self, user_param: &UserParam) -> Result<()>;
 
     async fn delete_by_id(&self, id: i32) -> Result<()>;
 
 }
 
+
 #[async_trait]
 impl UserRepo for UserRepoImpl {
-    async fn find_all(&self, user_param: &UserParam) -> Result<Vec<User>> {
+    async fn find_all(&self, user_query_param: &UserQueryParam) -> Result<Vec<User>> {
         let mut query = sqlx::query_as::<_, User>("select * from user");
-        if let Some(name) = &user_param.name {
-            query = sqlx::query_as::<_, User>("select * from user where name LIKE $1")
-                .bind(format!("%{}%", name))
-        }
         let result = query
             .fetch_all(&*self.pool)
             .await
@@ -43,25 +43,8 @@ impl UserRepo for UserRepoImpl {
         Ok(result)
     }
 
-    // async fn add(&self, user_data: &NewUser) -> Result<UserId> {
-    //     let row = sqlx::query_as::<_, UserId>(
-    //         r#"
-    //         INSERT INTO users (name, msg, age)
-    //         VALUES ($1, $2, $3)
-    //         RETURNING id
-    //         "#,
-    //     )
-    //     .bind(&user_data.name)
-    //     .bind(&user_data.msg)
-    //     .bind(&user_data.age)
-    //     .fetch_one(&*self.pool)
-    //     .await
-    //     .context("DB ERROR (create user)")?;
-    //     Ok(row)
-    // }
-
     async fn find_by_id(&self, user_id: i32) -> Result<User> {
-        let row = sqlx::query_as::<_, User>("select * from users where id = $1")
+        let row = sqlx::query_as::<_, User>("select * from sys_user where id = $1")
             .bind(user_id)
             .fetch_one(&*self.pool)
             .await
@@ -69,11 +52,11 @@ impl UserRepo for UserRepoImpl {
         Ok(row)
     }
 
-    async fn insert(&self, user: User) -> Result<()> {
+    async fn insert(&self, user_param: &UserParam) -> Result<()> {
         todo!()
     }
 
-    async fn update_by_id(&self, user: User) -> Result<()> {
+    async fn update_by_id(&self, user_param: &UserParam) -> Result<()> {
         todo!()
     }
 

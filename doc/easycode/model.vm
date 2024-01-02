@@ -1,0 +1,67 @@
+$!{init.vm}
+
+##定义初始变量
+#set($tableName = $tool.append($tableInfo.name, ""))
+#set($tableObjName = $tableInfo.obj.name.replaceFirst("sys_",""))
+#set($tableObjParamName = $tool.append($tableObjName, "_param"))
+
+##设置回调
+$!callback.setFileName($tool.append($tableObjName, ".rs"))
+$!callback.setSavePath($tool.append($tableInfo.savePath, "/models"))
+##拿到主键
+#if(!$tableInfo.pkColumn.isEmpty())
+    #set($pk = $tableInfo.pkColumn.get(0))
+#end
+
+use serde::{Deserialize, Serialize};
+use sqlx::FromRow;
+use sqlx::types::chrono::{DateTime, Utc};
+
+#[derive(Serialize, Deserialize, FromRow, Debug)]
+pub struct $!{tableInfo.name} {
+
+#foreach($column in $tableInfo.fullColumn)
+    #if(${column.comment})
+    //${column.comment}#end
+    
+    pub $!{column.obj.name}: #if(${column.obj.isNotNull()})
+$!{tool.getClsNameByFullName($column.type)},
+#else
+Option<$!{tool.getClsNameByFullName($column.type)}>,
+#end
+#end
+
+}
+
+
+#[derive(Serialize, Deserialize, FromRow, Debug)]
+pub struct $!{tableInfo.name}Param {
+
+#foreach($column in $tableInfo.fullColumn)
+    #if(${column.comment})
+    //${column.comment}#end
+
+    pub $!{column.obj.name}: #if(${column.obj.isNotNull()})
+$!{tool.getClsNameByFullName($column.type)},
+#else
+Option<$!{tool.getClsNameByFullName($column.type)}>,
+#end
+#end
+
+}
+
+#[derive(Serialize, Deserialize, FromRow, Debug)]
+pub struct $!{tableInfo.name}QueryParam {
+
+#foreach($column in $tableInfo.fullColumn)
+    #if(${column.comment})
+    //${column.comment}#end
+
+    pub $!{column.obj.name}: #if(${column.obj.isNotNull()})
+$!{tool.getClsNameByFullName($column.type)},
+#else
+Option<$!{tool.getClsNameByFullName($column.type)}>,
+#end
+#end
+
+}
