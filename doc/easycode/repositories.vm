@@ -1,0 +1,81 @@
+$!{init.vm}
+
+##定义初始变量
+#set($tableName = $tool.append($tableInfo.name, ""))
+#set($tableObjName = $tableInfo.obj.name.replaceFirst("sys_",""))
+#set($tableObjParamName = $tool.append($tableObjName, "_param"))
+
+##设置回调
+$!callback.setFileName($tool.append($tableObjName, ".rs"))
+$!callback.setSavePath($tool.append($tableInfo.savePath, "/repositories"))
+##拿到主键
+#if(!$tableInfo.pkColumn.isEmpty())
+    #set($pk = $tableInfo.pkColumn.get(0))
+#end
+
+use crate::error::Result;
+use crate::models::${tableObjName}::{$!{tableInfo.name}, $!{tableInfo.name}Param, $!{tableInfo.name}QueryParam};
+use crate::repositories::Repositories;
+use crate::db::mysql::Db;
+use axum::async_trait;
+use anyhow::Context;
+
+
+pub struct $!{tableInfo.name}RepoImpl {
+    pool: Db,
+}
+
+impl $!{tableInfo.name}RepoImpl {
+    pub fn new(pool: Db) -> Self {
+        Self { pool: pool }
+    }
+}
+
+// #[automock]
+#[async_trait]
+pub trait $!{tableInfo.name}Repo {
+    async fn find_all(&self, ${tableObjName}_query_param: &$!{tableInfo.name}QueryParam) -> Result<Vec<$!{tableInfo.name}>>;
+
+    async fn find_by_id(&self, user_id: i32) -> Result<$!{tableInfo.name}>;
+
+    async fn insert(&self, ${tableObjParamName}: &$!{tableInfo.name}Param) -> Result<()>;
+
+    async fn update_by_id(&self, ${tableObjParamName}: &$!{tableInfo.name}Param) -> Result<()>;
+
+    async fn delete_by_id(&self, id: i32) -> Result<()>;
+
+}
+
+
+#[async_trait]
+impl UserRepo for UserRepoImpl {
+    async fn find_all(&self, ${tableObjName}_query_param: &$!{tableInfo.name}QueryParam) -> Result<Vec<$!{tableInfo.name}>> {
+        let mut query = sqlx::query_as::<_, User>("select * from ${tableObjName}");
+        let result = query
+            .fetch_all(&*self.pool)
+            .await
+            .context("DB ERROR (find all users)")?;
+        Ok(result)
+    }
+
+    async fn find_by_id(&self, user_id: i32) -> Result<$!{tableInfo.name}> {
+        let row = sqlx::query_as::<_, $!{tableInfo.name}>("select * from $!{tableInfo.obj.name} where id = $1")
+            .bind(${tableObjName}_id)
+            .fetch_one(&*self.pool)
+            .await
+            .context("DB ERROR (find ${tableObjName} by id)")?;
+        Ok(row)
+    }
+
+    async fn insert(&self, ${tableObjParamName}: &$!{tableInfo.name}Param) -> Result<()> {
+        todo!()
+    }
+
+    async fn update_by_id(&self, ${tableObjParamName}: &$!{tableInfo.name}Param) -> Result<()> {
+        todo!()
+    }
+
+    async fn delete_by_id(&self, id: i32) -> Result<()> {
+        todo!()
+    }
+}
