@@ -15,7 +15,6 @@ $!callback.setSavePath($tool.append($tableInfo.savePath, "/repositories"))
 
 use crate::error::Result;
 use crate::models::${tableObjName}::{$!{tableInfo.name}, $!{tableInfo.name}Param, $!{tableInfo.name}QueryParam};
-use crate::repositories::Repositories;
 use crate::db::mysql::Db;
 use axum::async_trait;
 use anyhow::Context;
@@ -48,9 +47,9 @@ pub trait $!{tableInfo.name}Repo {
 
 
 #[async_trait]
-impl UserRepo for UserRepoImpl {
+impl $!{tableInfo.name}Repo for $!{tableInfo.name}RepoImpl {
     async fn find_all(&self, ${tableObjName}_query_param: &$!{tableInfo.name}QueryParam) -> Result<Vec<$!{tableInfo.name}>> {
-        let mut query = sqlx::query_as::<_, User>("select * from ${tableObjName}");
+        let mut query = sqlx::query_as::<_, $!{tableInfo.name}>("select * from ${tableObjName}");
         let result = query
             .fetch_all(&*self.pool)
             .await
@@ -58,7 +57,7 @@ impl UserRepo for UserRepoImpl {
         Ok(result)
     }
 
-    async fn find_by_id(&self, user_id: i32) -> Result<$!{tableInfo.name}> {
+    async fn find_by_id(&self, ${tableObjName}_id: i32) -> Result<$!{tableInfo.name}> {
         let row = sqlx::query_as::<_, $!{tableInfo.name}>("select * from $!{tableInfo.obj.name} where id = $1")
             .bind(${tableObjName}_id)
             .fetch_one(&*self.pool)
