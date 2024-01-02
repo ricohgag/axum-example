@@ -14,8 +14,8 @@ pub fn router() -> Router {
 
 fn user_routes() -> Router {
     Router::new()
-        .route("/:id", get(user::select_one))
         .route("/page", get(user::select_page))
+        .route("/:id", get(user::select_one))
         .route("/", post(user::insert))
         // .route("/", put(user::update))
         .route("/:id", delete(user::delete))

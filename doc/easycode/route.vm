@@ -16,16 +16,15 @@ $!callback.setSavePath($tool.append($tableInfo.savePath, "/router"))
 use axum::extract::{Path, Query};
 use axum::{Extension, Json};
 use crate::models::${tableObjName}::{$!{tableInfo.name}, $!{tableInfo.name}Param, $!{tableInfo.name}QueryParam};
-use crate::error::Result;
 use crate::repositories::RepoExt;
 use crate::service;
 use crate::models::result::{R, ToResult};
 
 
-pub async fn select_pages(Extension(repo): RepoExt, 
+pub async fn select_page(Extension(repo): RepoExt, 
     Query(${tableObjName}_query_param): Query<$!{tableInfo.name}QueryParam>
 ) -> R<Vec<$!{tableInfo.name}>> {
-    let users_res = service::${tableObjName}::select_pages(repo.clone(), &${tableObjName}_query_param).await;
+    let users_res = service::${tableObjName}::select_page(repo.clone(), &${tableObjName}_query_param).await;
     users_res.to_result()
 }
 
@@ -34,12 +33,12 @@ pub async fn select_one(Extension(repo): RepoExt, Path(id): Path<i32>) -> R<$!{t
     user_res.to_result()
 }
 
-pub async fn insert(Extension(repo): RepoExt, Json(${tableObjParamName}): Json($!{tableInfo.name}Param)) -> R<()> {
+pub async fn insert(Extension(repo): RepoExt, Json(${tableObjParamName}): Json<$!{tableInfo.name}Param>) -> R<()> {
     let res = service::${tableObjName}::insert(repo.clone(), ${tableObjParamName}).await;
     res.to_result()
 }
 
-pub async fn update(Extension(repo): RepoExt, Json(${tableObjParamName}): Json($!{tableInfo.name}Param)) -> R<()> {
+pub async fn update(Extension(repo): RepoExt, Json(${tableObjParamName}): Json<$!{tableInfo.name}Param>) -> R<()> {
     let res = service::${tableObjName}::update(repo.clone(), ${tableObjParamName}).await;
     res.to_result()
 }

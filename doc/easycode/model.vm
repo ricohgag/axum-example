@@ -15,7 +15,7 @@ $!callback.setSavePath($tool.append($tableInfo.savePath, "/models"))
 
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
-use sqlx::types::chrono::{DateTime, Utc};
+use chrono::{DateTime, Utc};
 
 #[derive(Serialize, Deserialize, FromRow, Debug)]
 pub struct $!{tableInfo.name} {
@@ -57,11 +57,7 @@ pub struct $!{tableInfo.name}QueryParam {
     #if(${column.comment})
     //${column.comment}#end
 
-    pub $!{column.obj.name}: #if(${column.obj.isNotNull()})
-$!{tool.getClsNameByFullName($column.type)},
-#else
-Option<$!{tool.getClsNameByFullName($column.type)}>,
-#end
+    pub $!{column.obj.name}: Option<$!{tool.getClsNameByFullName($column.type)}>,
 #end
 
 }

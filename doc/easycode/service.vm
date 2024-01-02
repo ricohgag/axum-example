@@ -19,7 +19,7 @@ use crate::repositories::{${tableObjName}::UserRepo, Repositories};
 use std::sync::Arc;
 
 
-pub async fn select_pages<R: Repositories>(repo: Arc<R>,
+pub async fn select_page<R: Repositories>(repo: Arc<R>,
     ${tableObjName}_query_param: &$!{tableInfo.name}QueryParam,
 ) -> Result<Vec<User>> {
     let users = repo.${tableObjName}().find_all(${tableObjName}_query_param).await?;
@@ -37,11 +37,11 @@ pub async fn insert<R: Repositories>(repo: Arc<R>, ${tableObjParamName}: $!{tabl
 }
 
 pub async fn update<R: Repositories>(repo: Arc<R>, ${tableObjParamName}: $!{tableInfo.name}Param) -> Result<()> {
-    repo.${tableObjName}().update(${tableObjParamName}).await?;
+    repo.${tableObjName}().update_by_id(${tableObjParamName}).await?;
     Ok(())
 }
 
 pub async fn delete<R: Repositories>(repo: Arc<R>, ${tableObjName}_id: i32) -> Result<()> {
-    repo.${tableObjName}().delete(${tableObjName}_id).await?;
+    repo.${tableObjName}().delete_by_id(${tableObjName}_id).await?;
     Ok(())
 }

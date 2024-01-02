@@ -1,13 +1,12 @@
 use axum::extract::{Path, Query};
 use axum::{Extension, Json};
 use crate::models::user::{User, UserParam, UserQueryParam};
-use crate::error::Result;
 use crate::repositories::RepoExt;
 use crate::service;
 use crate::models::result::{R, ToResult};
 
 
-pub async fn select_page(Extension(repo): RepoExt,
+pub async fn select_page(Extension(repo): RepoExt, 
     Query(user_query_param): Query<UserQueryParam>
 ) -> R<Vec<User>> {
     let users_res = service::user::select_page(repo.clone(), &user_query_param).await;
@@ -24,7 +23,10 @@ pub async fn insert(Extension(repo): RepoExt, Json(user_param): Json<UserParam>)
     res.to_result()
 }
 
-
+pub async fn update(Extension(repo): RepoExt, Json(user_param): Json<UserParam>) -> R<()> {
+    let res = service::user::update(repo.clone(), user_param).await;
+    res.to_result()
+}
 
 pub async fn delete(Extension(repo): RepoExt, Path(id): Path<i32>) -> R<()> {
     let res = service::user::delete(repo.clone(), id).await;
