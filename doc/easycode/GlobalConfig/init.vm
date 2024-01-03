@@ -1,7 +1,7 @@
 ##初始化区域
 
 ##去掉表的t_前缀
-$!tableInfo.setName($tool.getClassName($tableInfo.obj.name.replaceFirst("sys_","")))
+$!tableInfo.setName($tool.getClassName($tableInfo.obj.name.replaceFirst("cook_","")))
 
 ##参考阿里巴巴开发手册，POJO 类中布尔类型的变量，都不要加 is 前缀，否则部分框架解析会引起序列化错误
 #foreach($column in $tableInfo.fullColumn)
@@ -34,3 +34,8 @@ $!tableInfo.setName($tool.getClassName($tableInfo.obj.name.replaceFirst("sys_","
 #end
 ##覆盖
 #set($importList = $temp)
+
+##定义初始变量
+#set($tableName = $tool.append($tableInfo.name, ""))
+#set($tableObjName = $tableInfo.obj.name.replaceFirst("cook_",""))
+#set($tableObjParamName = $tool.append($tableObjName, "_param"))

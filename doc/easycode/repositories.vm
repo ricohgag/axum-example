@@ -1,10 +1,5 @@
 $!{init.vm}
 
-##定义初始变量
-#set($tableName = $tool.append($tableInfo.name, ""))
-#set($tableObjName = $tableInfo.obj.name.replaceFirst("sys_",""))
-#set($tableObjParamName = $tool.append($tableObjName, "_param"))
-
 ##设置回调
 $!callback.setFileName($tool.append($tableObjName, ".rs"))
 $!callback.setSavePath($tool.append($tableInfo.savePath, "/repositories"))
@@ -49,7 +44,7 @@ pub trait $!{tableInfo.name}Repo {
 #[async_trait]
 impl $!{tableInfo.name}Repo for $!{tableInfo.name}RepoImpl {
     async fn find_all(&self, ${tableObjName}_query_param: &$!{tableInfo.name}QueryParam) -> Result<Vec<$!{tableInfo.name}>> {
-        let mut query = sqlx::query_as::<_, $!{tableInfo.name}>("select * from ${tableObjName}");
+        let mut query = sqlx::query_as::<_, $!{tableInfo.name}>("select * from ${tableInfo.obj.name}");
         let result = query
             .fetch_all(&*self.pool)
             .await
